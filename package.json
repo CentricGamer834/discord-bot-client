@@ -1,0 +1,16 @@
+{
+	"name": "discord-bot-client",
+	"description": "Discord Bot Client",
+	"author": "CentricGamer834",
+	"version": "0.5-beta",
+	"scripts": {
+		"start": "npm run build && npm run serve",
+		"build": "browserify public/main.js -o public/bundle.js",
+		"serve": "http-server public"
+	},
+	"dependencies": {
+		"browserify": "^17.0.0",
+		"http-server": "^14.1.1",
+		"discord.js": "11.6.4"
+	}
+}
