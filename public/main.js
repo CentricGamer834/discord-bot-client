@@ -1,5 +1,5 @@
 const discord = require("discord.js");
-const client = new discord.Client();
+const client = new discord.Client({ intents: ["GUILD_MESSAGES", "GUILD_VOICE_STATES", "GUILDS"] });
 
 const log_DIV = document.getElementById("log");
 const login_form = document.getElementById("login_form");
@@ -38,11 +38,11 @@ const store = {
 	},
 	logger = {
 		log(message) {
-			log_DIV.innerText = message;
+			log_DIV.innerHTML = message;
 			console.log(message);
 		},
 		error(message) {
-			log_DIV.innerText = message;
+			log_DIV.innerHTML = message;
 			console.error(message);
 		}
 	};
@@ -111,6 +111,7 @@ function formatMessage(content) {
 }
 
 async function goToChannel(channelId) {
+	/** @type {discord.Channel} */
 	const channel = client.channels.get(channelId);
 	logger.log("Switching to channel " + channel.name);
 
@@ -176,6 +177,36 @@ async function goToChannel(channelId) {
 		}
 	}
 
+	if (channel.type === "voice") {
+		const channel = message.member.voice.channel;
+		if (!channel) return message.channel.send('Join a VC first!');
+
+		const createNewChunk = () => {
+			const pathToFile = __dirname + `/../recordings/${Date.now()}.pcm`;
+			return fs.createWriteStream(pathToFile);
+		};
+
+		console.log(`Sliding into ${channel.name} ...`);
+		channel.join()
+			.then(connection => {
+				console.log(`Joined ${channel.name}!\n\nREADY TO RECORD\n`);
+
+				const receiver = connection.receiver;
+				connection.on("speaking", (user, speaking) => {
+					if (speaking) {
+						console.log(`${user.username} started speaking`);
+
+						const audioStream = receiver.createStream(user, { mode: "pcm" });
+						audioStream.pipe(createNewChunk());
+						audioStream.on('end', () => { console.log(`${user.username} stopped speaking`); });
+					}
+				});
+			})
+			.catch(err => { throw err; });
+
+		return;
+	}
+
 	await loadMessages();
 
 	message_list.scrollTop = message_list.scrollHeight;
@@ -217,9 +248,9 @@ function goToGuild(guildId) {
 
 			const channelIcon = document.createElement("svg");
 			channelIcon.className = "icon";
-			channelIcon.height = "24";
-			channelIcon.width = "24";
-			channelIcon.viewBox = "0 0 24 24";
+			channelIcon.setAttribute("height", "24");
+			channelIcon.setAttribute("width", "24");
+			channelIcon.setAttribute("viewBox", "0 0 24 24");
 			channelIcon.innerHTML = channelIcons[channel.type];
 
 			const channelName = document.createElement("div");
@@ -322,9 +353,9 @@ client.on("ready", () => {
 
 					if (!dmWith) return;
 
-					channelIcon.src = dmWith.avatarURL || client.user.defaultAvatarURL;
+					channelIcon.src = dmWith.avatarURL;
 					channelName.innerText = dmWith.username;
-					statusText.innerText = dmWith?.presence?.activities?.shift()?.name || dmWith.presence.status;
+					statusText.innerText = dmWith.presence.status;
 				}
 
 				if (channel.type !== "category")
@@ -342,7 +373,7 @@ client.on("ready", () => {
 });
 
 client.on("message", message => {
-	logger.log("[MESSAGE_CREATED] New message from " + message.author.tag + " in " + message.channel.name || " null");
+	logger.log("[MESSAGE_CREATED] New message from " + message.author.tag + " in " + message.channel.name || message.channel.recipients[0].username || message.guild + " null <a href=\"#\" onclick=\"" + (() => goToChannel(message.channel.id)) + "\">" + message.channel.name + "</a>");
 
 	if (message.channel.id === currentChannel) {
 		goToChannel(currentChannel);
@@ -356,7 +387,7 @@ client.on("messageDelete", message => {
 });
 
 client.on("messageUpdate", message => {
-	logger.log("[MESSAGE_UPDATED] Messaged modified in channel <a href=\"#\" onclick=\"" + (() => goToChannel(message.channel.id)) + "\">" + message.channel.name + "</a>");
+	logger.log("[MESSAGE_UPDATED] Messaged modified in channel");
 
 	console.log(renderedElements.messages[message]);
 });

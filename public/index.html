@@ -21,9 +21,9 @@
 			<input type="text" id="token" autocomplete="impp" required placeholder="Token OR password">
 			<button type="submit">Login</button>
 		</form>
-		<div class="content_content">
+		<div class="content">
 			<div class="guild_wrapper">
-				<nav id="guilds">
+				<div id="guilds">
 					<a class="guild" id="home_btn">
 						<svg class="icon" width="28" height="20" viewBox="0 0 28 20">
 							<path fill="currentColor"
@@ -31,23 +31,16 @@
 							</path>
 						</svg>
 					</a>
-				</nav>
-				<a class="guild" id="joinGuild">
-					<svg class="icon" width="24" height="24" viewBox="0 0 24 24">
-						<path fill="currentColor"
-							d="M20 11.1111H12.8889V4H11.1111V11.1111H4V12.8889H11.1111V20H12.8889V12.8889H20V11.1111Z">
-						</path>
-					</svg>
-				</a>
+				</div>
 			</div>
-			<div class="base_content">
+			<div class="base">
 				<div class="channel_wrapper">
-					<div id="search_bar"><button></button></div>
-					<nav id="channels"></nav>
-					<section id="user_panel"></section>
+					<div id="search_bar"></div>
+					<div id="channels"></div>
+					<div id="user_panel"></div>
 				</div>
 				<div class="chat_wrapper">
-					<section id="channel_head"></section>
+					<div id="channel_head"></div>
 					<div id="messages"></div>
 					<form id="message_form">
 						<input type="text" id="message_content" placeholder="Enter message content" required>

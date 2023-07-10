@@ -62,7 +62,7 @@ body {
 	border-bottom: 1px solid;
 }
 
-.content_content {
+.content {
 	display: flex;
 	flex-direction: row;
 	flex-grow: 1;
@@ -133,7 +133,7 @@ body {
 	justify-content: center;
 }
 
-.base_content {
+.base {
 	display: flex;
 	align-items: stretch;
 	justify-content: flex-start;
@@ -293,6 +293,7 @@ body {
 #messages {
 	overflow: hidden scroll;
 	background-color: rgb(49, 51, 56);
+	background-image: url(./message_bg.png);
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 auto;
@@ -329,7 +330,7 @@ body {
 }
 
 .message.group_start {
-    margin-top: 1.0625rem;
+	margin-top: 1.0625rem;
 	min-height: 2.75rem;
 }
 
